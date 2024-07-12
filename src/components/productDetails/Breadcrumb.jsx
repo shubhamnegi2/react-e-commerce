@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 export default function Breadcrumb({name}) {
-    console.log('name=',name);
+    // console.log('name=',name);
     
     return (
         <>

@@ -331,28 +331,7 @@ a {
             text-decoration: none;
         }
 
-        .icon-cross {
-            position: absolute;
-            width: 35px;
-            height: 35px;
-            display: inline-block;
-            background: $dark;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            margin-bottom: -17.5px;
-            border-radius: 50%;
-            opacity: 0;
-            visibility: hidden;
-            transition: .3s all ease;
 
-            img {
-                position: absolute;
-                left: 50%;
-                top: 50%;
-                transform: translate(-50%, -50%);
-            }
-        }
 
         &:before {
             bottom: 0;
@@ -381,6 +360,30 @@ a {
             &:before {
                 height: 70%;
             }
+        }
+    }
+
+    .icon-cross {
+        position: absolute;
+        width: 35px;
+        height: 35px;
+        display: inline-block;
+        background: $dark;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-bottom: -17.5px;
+        border-radius: 50%;
+        opacity: 1;
+        visibility: visible;
+        transition: .3s all ease;
+        cursor: pointer;
+
+        img {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
     }
 }
@@ -931,6 +934,9 @@ a {
         background: $primary;
         margin-right: 20px;
         color: $white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }
 
@@ -1029,9 +1035,52 @@ textarea {
 .custom-navbar .custom-navbar-nav li .active:before {
     width: calc(100% - 16px);
 }
+
 .custom-navbar .custom-navbar-nav li .active {
     opacity: 1;
 }
-.cursor-pointer{
+
+.cursor-pointer {
     cursor: pointer;
+}
+
+.cartCount {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    font-size: 12px;
+    color: #fff;
+}
+
+.slick-prev:before,
+.slick-next:before {
+    cursor: pointer;
+    position: absolute;
+    width: 58px;
+    height: 58px;
+    line-height: 58px;
+    border-radius: 50%;
+    background: #2f2f2f;
+    color: #fff;
+    transition: 0.3s all ease;
+}
+
+.slick-dots li button:before {
+    font-size: 16px;
+}
+
+.slick-prev {
+    left: -40px;
+}
+
+.slick-next {
+    right: 0px;
+}
+
+.slick-prev,
+.slick-next {
+    top: 45%;
+}
+.react-datepicker-wrapper{
+    width: 100%;
 }

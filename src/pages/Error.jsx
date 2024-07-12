@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+
 import { NavLink } from 'react-router-dom'
 
 export default function Error() {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+      }, [])
     return (
         <div className='d-flex justify-content-center align-items-center min-vh-100 min-vw-100' >
             <div className='text-center'>

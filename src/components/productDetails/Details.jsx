@@ -1,18 +1,48 @@
 
-import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { NavLink, useParams } from 'react-router-dom';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-
+import CartContex from '../../contex/CartContex';
 export default function Details({ productData, pName }) {
     if (!productData) {
         return <><h1 className='text-center font-weight-bold'>Please wait...</h1></>;
     }
+    const { cart, setCart } = useContext(CartContex)
+    const { productId } = useParams()
     const [img, setImg] = useState('')
     const [quantity, setQuantity] = useState(1)
 
     useEffect(() => {
-        pName(productData.map(data => ({title: data.title, category: data.category})))
+        pName(productData.map(data => ({ title: data.title, category: data.category })))
+        setImg('')
+
     }, [productData])
+
+
+
+
+
+    const SetCartItm = (id) => {
+        if (!cart.ids.includes(id)) {
+            setCart(prev => ({
+                ...prev,
+                ids: [...prev.ids, id],
+                quantities: [...prev.quantities, { "id": id, "quantity": quantity }]
+            })
+            )
+        } else {
+            setCart(prev => (
+                {
+                    ...prev,
+                    ids: prev.ids.filter(prevIds => prevIds !== id),
+                    quantities: prev.quantities.filter(item => item.id !== id)
+                }
+            ))
+        }
+    }
+
+
+
 
 
 
@@ -44,19 +74,81 @@ export default function Details({ productData, pName }) {
         setImg(e.target.src);
     }
 
-    const increase = () => {
+    const increase = (id) => {
         quantity >= 999 ? setQuantity(999) : setQuantity(prev => (parseInt(prev) + 1))
+        quantity < 999 ? setCart(prev => {
+            const existingItem = prev.quantities.find(item => item.id === id);
+            if (existingItem) {
+                return {
+                    ...prev,
+                    quantities: prev.quantities.map(item =>
+                        item.id === id ? { "id": id, "quantity": item.quantity + 1 } : { ...item }
+                    )
+                };
+            } else {
+                return {
+                    ...prev
+                }
+            }
+        }) : setQuantity(999)
+        console.log('cart quantities', cart.quantities)
     }
-    const decrease = () => {
+
+    const decrease = (id) => {
         quantity <= 0 ? setQuantity(1) : setQuantity(prev => (parseInt(prev) - 1))
+        quantity > 1 ? setCart(prev => {
+            const existingItem = prev.quantities.find(item => item.id === id);
+            if (existingItem) {
+                return {
+                    ...prev,
+                    quantities: prev.quantities.map(item =>
+                        item.id === id ? { ...item, quantity: item.quantity - 1 } : { ...item }
+                    )
+                };
+            } else {
+                return {
+                    ...prev
+                }
+            }
+        }) : setQuantity(1)
+    };
+
+    const storeQuantity = (id) => {
+        setCart(prev => {
+            const hasItem = prev.quantities.find(item => item.id === id);
+            if (hasItem) {
+                return {
+                    ...prev,
+                    quantities: prev.quantities.map(item =>
+                        item.id === id ? { "id": id, "quantity": quantity } : { ...item }
+                    )
+                };
+            } else {
+                return {
+                    ...prev
+                }
+            }
+        })
+        console.log("quantity", quantity);
     }
     useEffect(() => {
         if (isNaN(quantity)) {
             setQuantity(1);
         }
-
-        console.log(quantity);
+        storeQuantity(productId)
     }, [quantity])
+
+
+    useEffect(() => {
+        getQuantity(productId);
+        window.scrollTo(0, 0);
+    }, [productId])
+
+    const getQuantity = (productId) => {
+        const item = cart.quantities.find(item => item.id == productId);
+        item ? setQuantity(parseInt(item.quantity)) : setQuantity(1)
+    }
+
     return (
         <>
             {productData.map(data => (
@@ -137,19 +229,19 @@ export default function Details({ productData, pName }) {
                                         <div className="col-md-4 col-6 mb-3">
                                             <label className="mb-2 d-block">Quantity</label>
                                             <div className="input-group mb-3" style={{ width: '170px' }}>
-                                                <button onClick={decrease} className="btn btn-white border border-secondary px-3" type="button" data-mdb-ripple-color="dark">
+                                                <button onClick={() => decrease(data.id)} className="btn btn-white border border-secondary px-3" type="button" data-mdb-ripple-color="dark">
                                                     <i className="fa fa-minus"></i>
                                                 </button>
-                                                <input type="text" onChange={(e) => setQuantity(e.target.value)} maxLength={4} value={quantity} className="form-control text-center border border-secondary" aria-label="Example text with button addon" aria-describedby="button-addon1" />
-                                                <button onClick={increase} className="btn btn-white border border-secondary px-3" type="button" data-mdb-ripple-color="dark">
+                                                <input type="text" onChange={(e) => setQuantity(parseInt(e.target.value))} maxLength={4} value={quantity} className="form-control text-center border border-secondary" aria-label="Example text with button addon" aria-describedby="button-addon1" />
+                                                <button onClick={() => increase(data.id)} className="btn btn-white border border-secondary px-3" type="button" data-mdb-ripple-color="dark">
                                                     <i className="fa fa-plus"></i>
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
-                                    <NavLink href="#" className="btn btn-warning shadow-0"> Buy now </NavLink >
-                                    <NavLink href="#" className="btn btn-primary shadow-0"> <i className="me-1 fa fa-shopping-basket"></i> Add to cart </NavLink >
-                                    <NavLink href="#" className="btn btn-light border border-secondary py-2 icon-hover px-3"> <i className="me-1 fa fa-heart fa-lg"></i> Save </NavLink >
+                                    <NavLink to="/checkout" className="btn btn-sm mx-2  btn-warning shadow-0"> Buy now </NavLink >
+                                    <button onClick={() => SetCartItm(data.id)} className="btn btn-sm mx-2  btn-primary shadow-0">{cart.ids.includes(data.id) ? 'Remove from cart' : 'Add to cart'} <i className="me-1 fa fa-shopping-basket mx-2"></i> </button >
+                                    {/* <button href="#" className="btn btn-sm mx-2  btn-light border border-secondary py-2 icon-hover px-3"> <i className="me-1 fa fa-heart fa-lg"></i> Save </button > */}
                                 </div>
                             </main>
                         </div>

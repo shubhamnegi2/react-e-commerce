@@ -1,23 +1,27 @@
 import React from 'react'
-
-import couch from '../../assets/images/couch.png'
-
-export default function Banner() {
+import image from '../../assets/images/couch.png'
+import { NavLink } from 'react-router-dom'
+export default function Banner({ data }) {
+    
     return (
         <>
-            <div className="hero">
+            <div  className="hero">
                 <div className="container">
                     <div className="row justify-content-between">
                         <div className="col-lg-5">
                             <div className="intro-excerpt">
-                                <h1>Modern Interior <span clsas="d-block">Design Studio</span></h1>
-                                <p className="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique.</p>
-                                <p><a href="" className="btn btn-secondary me-2">Shop Now</a><a href="#" className="btn btn-white-outline">Explore</a></p>
+                                <h1>{data.heading} <span className='d-block'>{data.subHeading}</span></h1>
+                                <p className="mb-4">{data.description}</p>
+                                <p>
+                                    {(data.buttons).map((item ,index)=> (
+                                        <NavLink to={item.path} key={item.id || index} className={item.className}>{item.text}</NavLink>
+                                    ))}
+                                </p>
                             </div>
                         </div>
                         <div className="col-lg-7">
                             <div className="hero-img-wrap">
-                                <img src={couch} className="img-fluid" />
+                                <img src={data.image} className="img-fluid" />
                             </div>
                         </div>
                     </div>

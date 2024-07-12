@@ -27,7 +27,7 @@ export default function ProductDetails() {
 
     useEffect(() => {
         getMyProduct();
-    }, [allProductData])
+    }, [allProductData,productId])
 
     const getMyProduct = () => {
         const product = allProductData.filter((item) => (productId == item.id))

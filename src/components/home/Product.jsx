@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-
-import crossImg from '../../assets/images/cross.svg'
+import CartContex from '../../contex/CartContex'
+import plusImg from '../../assets/images/cross.svg'
 
 export default function Product() {
     const [productData, setProductDate] = useState([])
@@ -10,7 +10,29 @@ export default function Product() {
             .then((res) => res.json())
             .then(data => setProductDate(data))
     }, [])
-    console.log(productData);
+
+    const { cart, setCart } = useContext(CartContex);
+
+    const SetCartItm = (id) => {
+        if (!cart.ids.includes(id)) {
+            setCart(prev => ({
+                ...prev,
+                ids: [...prev.ids, id],
+                quantities: [...prev.quantities, { "id": id, "quantity": 1 }],
+            }));
+        } else {
+            setCart(prev => (
+                {
+                    ...prev,
+                    ids: (prev.ids).filter(item => item !== id),
+                    quantities: [prev.quantities.filter(item=>item.id !== id )],
+                }
+            ))
+        }
+        console.log(cart);
+    }
+
+
     return (
         <>
             <div className="product-section">
@@ -23,17 +45,17 @@ export default function Product() {
                         </div>
 
 
-                        {productData.slice(0, 3).map(data => (
-                            <div className="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                                <NavLink key={data.id} className="product-item" to={`/productDetails/${data.id}`}>
+                        {productData.slice(0, 3).map((data, i) => (
+                            <div key={i + 565} className="col-12 col-md-4 col-lg-3 mb-5 mb-md-0 position-relative">
+                                <NavLink className="product-item" to={`/productDetails/${data.id}`}>
                                     <img src={data.image} className="img-fluid product-thumbnail" />
                                     <h3 className="product-title">{data.title}</h3>
                                     <strong className="product-price">$ {data.price}</strong>
 
-                                    <span className="icon-cross">
-                                        <img src={crossImg} className="img-fluid" />
-                                    </span>
                                 </NavLink>
+                                <span className="icon-cross d-flex justify-content-center align-items-center" onClick={() => SetCartItm(data.id)}>
+                                    {cart.ids.includes(data.id) ? <i className="fa fa-minus text-white" aria-hidden="true"></i> : <img src={plusImg} className="img-fluid" />}
+                                </span>
                             </div>
                         ))}
 
